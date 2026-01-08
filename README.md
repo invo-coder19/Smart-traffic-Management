@@ -154,14 +154,6 @@ smart_traffic_violation/
 - View violation types and fines
 - Check system requirements
 
-## 🎨 UI Features
-
-### Blue-Themed Professional Interface
-- **Modern Design**: Gradient headers and card layouts
-- **Responsive**: Works on desktop and tablet
-- **Interactive**: Real-time updates and visualizations
-- **Intuitive**: Easy navigation with sidebar menu
-
 ### Violation Display
 - Color-coded severity levels (High, Medium, None)
 - Confidence scores with visual indicators
@@ -192,15 +184,6 @@ DETECTION_CONFIDENCE_THRESHOLD = 0.6  # Minimum confidence
 HELMET_COLOR_THRESHOLD = 0.3          # Helmet detection sensitivity
 PERSON_COUNT_THRESHOLD = 2            # Max persons on two-wheeler
 SPEED_LIMIT_KMH = 40                  # Speed limit
-```
-
-### Customizing UI Colors
-
-```python
-# UI Color Scheme - Blue Theme
-PRIMARY_BLUE = "#1E3A8A"
-ACCENT_BLUE = "#3B82F6"
-LIGHT_BLUE = "#60A5FA"
 ```
 
 ### Database Selection
@@ -287,16 +270,11 @@ This project is open source and available for educational and research purposes.
 
 ## 📞 Support
 
-For issues, questions, or contributions:
-- Create an issue in the repository
-- Check troubleshooting section
-- Review documentation
+- Soham Deshpande(sohamd1912@gmail.com)
 
 ---
 
 <div align="center">
-
-**Made with ❤️ for Road Safety**
 
 *Powered by AI & Computer Vision*
 
