@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-Powered Smart Traffic Crime Detection System — Real-time computer vision monitoring, violation detection, and traffic management for city law enforcement." />
+  <meta name="keywords" content="traffic monitoring, AI detection, smart city, violation detection, number plate recognition, traffic management" />
+  <meta name="theme-color" content="#070c1a" />
+  <title>TrafficAI — Smart Traffic Crime Detection System</title>
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* Inline critical styles for instant render */
+    body { background: #070c1a; }
+    .loading-screen {
+      position: fixed; inset: 0;
+      background: #070c1a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    .loading-screen.hidden { opacity: 0; pointer-events: none; }
+    .loading-logo {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #00d4ff, #00ff88);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; color: #fff;
+      margin-bottom: 24px;
+      box-shadow: 0 0 60px rgba(0,212,255,0.4);
+      animation: float 2s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .loading-title { font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 900; color: #fff; margin-bottom: 6px; }
+    .loading-sub { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 32px; }
+    .loading-bar { width: 280px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .loading-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #00ff88); border-radius: 2px; animation: load 1.5s ease forwards; }
+    @keyframes load { from { width: 0; } to { width: 100%; } }
+    .loading-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(0,212,255,0.6); margin-top: 14px; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-logo"><i class="fas fa-traffic-light"></i></div>
+    <div class="loading-title">TrafficAI</div>
+    <div class="loading-sub">Smart Traffic Crime Detection System</div>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+    <div class="loading-status" id="loading-status">Initializing AI models...</div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div id="toast-container"></div>
+
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- App Shell -->
+  <div class="app-shell">
+
+    <!-- ────────────────────────────────────────────
+         SIDEBAR
+    ──────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Logo -->
+      <a class="sidebar-logo" onclick="App.navigate('dashboard')" style="cursor:pointer">
+        <div class="logo-icon"><i class="fas fa-traffic-light"></i></div>
+        <div class="logo-text">
+          <div class="logo-name">TRAFFIC AI</div>
+          <div class="logo-sub">Crime Detection System</div>
+        </div>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Rendered by JS -->
+      </nav>
+
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <button class="sidebar-toggle" id="sidebar-collapse-btn">
+          <i class="fas fa-chevron-left" id="collapse-icon"></i>
+          <span id="collapse-label">Collapse</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ────────────────────────────────────────────
+         MAIN WRAPPER
+    ──────────────────────────────────────────── -->
+    <div class="main-wrapper">
+
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <!-- Mobile menu -->
+        <button class="nav-mobile-toggle" id="mobile-menu-btn">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Breadcrumb -->
+        <div class="nav-breadcrumb">
+          <div>
+            <div class="page-title" id="page-title">Dashboard</div>
+            <div class="page-sub" id="page-sub">Smart Traffic Crime Detection System</div>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="nav-search">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="global-search" placeholder="Search vehicles, violations, cameras..." autocomplete="off" />
+        </div>
+
+        <!-- Action buttons -->
+        <div class="nav-actions">
+          <!-- Theme toggle -->
+          <button class="nav-btn" onclick="App.toggleTheme()" title="Toggle Theme" id="theme-btn">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <!-- Notifications -->
+          <div class="notif-wrapper">
+            <button class="nav-btn" id="notif-btn" onclick="NotificationSystem.toggleDropdown()" title="Notifications">
+              <i class="fas fa-bell"></i>
+              <div id="notif-badge" style="display:none">0</div>
+            </button>
+            <!-- Notification Dropdown -->
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-header">
+                <h4><i class="fas fa-bell" style="color:var(--neon-blue)"></i> Notifications</h4>
+                <button onclick="NotificationSystem.markAllRead()">Mark all read</button>
+              </div>
+              <div id="notif-list"></div>
+              <div class="notif-footer">
+                <button onclick="App.navigate('violations')">View All Violations →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <button class="nav-btn" onclick="App.navigate('settings')" title="Settings">
+            <i class="fas fa-cog"></i>
+          </button>
+
+          <!-- Logout -->
+          <button class="nav-btn" title="Logout" onclick="alert('Logout functionality would be implemented here.')">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+
+          <!-- Admin Profile -->
+          <div class="nav-profile">
+            <div class="profile-avatar">AD</div>
+            <div class="profile-info">
+              <span class="profile-name">Admin</span>
+              <span class="profile-role">Super Admin</span>
+            </div>
+            <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text-muted)"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+
+        <!-- ── DASHBOARD ──────────────────────────────── -->
+        <section class="page-section active" id="page-dashboard"></section>
+
+        <!-- ── LIVE FEED ──────────────────────────────── -->
+        <section class="page-section" id="page-live-feed"></section>
+
+        <!-- ── AI DETECTION ───────────────────────────── -->
+        <section class="page-section" id="page-ai-detection"></section>
+
+        <!-- ── VIOLATIONS ─────────────────────────────── -->
+        <section class="page-section" id="page-violations"></section>
+
+        <!-- ── VEHICLES ───────────────────────────────── -->
+        <section class="page-section" id="page-vehicles"></section>
+
+        <!-- ── CHALLANS ───────────────────────────────── -->
+        <section class="page-section" id="page-challans"></section>
+
+        <!-- ── ANALYTICS ─────────────────────────────── -->
+        <section class="page-section" id="page-analytics"></section>
+
+        <!-- ── REPORTS ────────────────────────────────── -->
+        <section class="page-section" id="page-reports"></section>
+
+        <!-- ── CAMERAS ────────────────────────────────── -->
+        <section class="page-section" id="page-cameras"></section>
+
+        <!-- ── USERS ──────────────────────────────────── -->
+        <section class="page-section" id="page-users"></section>
+
+        <!-- ── SETTINGS ───────────────────────────────── -->
+        <section class="page-section" id="page-settings"></section>
+
+      </main>
+    </div><!-- /main-wrapper -->
+  </div><!-- /app-shell -->
+
+  <!-- ── Libraries ────────────────────────────────────────────── -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Leaflet.js -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Loading screen controller -->
+  <script>
+    const statuses = [
+      'Initializing AI models...',
+      'Loading YOLOv9 weights...',
+      'Connecting to camera network...',
+      'Starting real-time inference...',
+      'Loading dashboard...',
+    ];
+    let si = 0;
+    const statusEl = document.getElementById('loading-status');
+    const statusInterval = setInterval(() => {
+      si++;
+      if (statusEl && si < statuses.length) statusEl.textContent = statuses[si];
+    }, 300);
+
+    setTimeout(() => {
+      clearInterval(statusInterval);
+      const ls = document.getElementById('loading-screen');
+      if (ls) {
+        ls.classList.add('hidden');
+        setTimeout(() => ls.remove(), 600);
+      }
+    }, 1600);
+
+    // Sidebar collapse toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const collapseBtn = document.getElementById('sidebar-collapse-btn');
+      const sidebar = document.getElementById('sidebar');
+      const collapseIcon = document.getElementById('collapse-icon');
+      const collapseLabel = document.getElementById('collapse-label');
+
+      collapseBtn?.addEventListener('click', () => {
+        sidebar?.classList.toggle('collapsed');
+        if (sidebar?.classList.contains('collapsed')) {
+          collapseIcon.className = 'fas fa-chevron-right';
+          collapseLabel.textContent = '';
+        } else {
+          collapseIcon.className = 'fas fa-chevron-left';
+          collapseLabel.textContent = 'Collapse';
+        }
+      });
+
+      // Live clock in header
+      setInterval(() => {
+        const now = new Date();
+        const sub = document.getElementById('page-sub');
+        if (sub) sub.textContent = now.toLocaleString('en-IN', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      }, 1000);
+
+      // Theme btn icon sync
+      document.getElementById('theme-btn')?.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        if (icon) icon.className = document.body.classList.contains('light-mode') ? 'fas fa-moon' : 'fas fa-sun';
+      });
+
+      // Search
+      document.getElementById('global-search')?.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        if (q.length > 2) {
+          // Visual feedback only
+          this.style.borderColor = 'var(--neon-blue)';
+        } else {
+          this.style.borderColor = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
