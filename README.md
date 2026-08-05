@@ -1,6 +1,6 @@
 # 🚦 Smart Traffic Violation Detection System
 
-An AI-powered web application that automatically detects traffic violations using computer vision and OCR technology. Built specifically for Indian traffic scenarios.
+An AI-powered application that automatically detects traffic violations using computer vision and OCR technology. Built specifically for Indian traffic scenarios. Includes both a **modern web dashboard** (`index.html`) and a **Streamlit backend app** (`app.py`).
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.9+-green.svg)
@@ -19,6 +19,7 @@ An AI-powered web application that automatically detects traffic violations usin
 - **Real-time Analysis** - Process images instantly
 - **High Accuracy** - ~70-85% detection confidence
 - **Database Storage** - SQLite/CSV storage for violation records
+- **Web Dashboard** - Interactive frontend with live map, charts, and notifications
 - **Professional UI** - Blue-themed modern interface
 
 ## 🛠️ Technology Stack
@@ -29,6 +30,7 @@ An AI-powered web application that automatically detects traffic violations usin
 | Computer Vision | OpenCV |
 | OCR Engine | Tesseract (pytesseract) |
 | Web Framework | Streamlit |
+| Web Dashboard | HTML + Vanilla JS + CSS |
 | Database | SQLite + CSV |
 | Data Processing | Pandas, NumPy |
 | Image Processing | Pillow |
@@ -36,8 +38,9 @@ An AI-powered web application that automatically detects traffic violations usin
 ## 📁 Project Structure
 
 ```
-smart_traffic_violation/
+Smart-traffic-Management/
 │
+├── index.html                 # Web dashboard (frontend entry point)
 ├── app.py                     # Main Streamlit application
 ├── config.py                  # Configuration & constants
 ├── requirements.txt           # Python dependencies
@@ -50,12 +53,18 @@ smart_traffic_violation/
 │   ├── utils.py               # Helper functions
 │   └── database.py            # Database manager
 │
-├── data/                      # Data storage
-│   ├── samples/               # Sample test images
-│   └── violations.csv         # Violation records
+├── css/                       # Stylesheet assets
+│   └── style.css              # Custom styles
 │
-└── assets/                    # UI assets
-    └── style.css              # Custom styles
+├── js/                        # JavaScript modules
+│   ├── app.js                 # Main application logic
+│   ├── charts.js              # Charts & analytics
+│   ├── data.js                # Data management
+│   ├── map.js                 # Live map integration
+│   └── notifications.js       # Notification system
+│
+└── data/                      # Data storage
+    └── samples/               # Sample test images
 ```
 
 ## 📦 Installation
@@ -86,9 +95,10 @@ smart_traffic_violation/
 
 ### Setup Steps
 
-1. **Clone or download the project**
+1. **Clone the repository**
    ```bash
-   cd smart_traffic_violation
+   git clone https://github.com/invo-coder19/Smart-traffic-Management.git
+   cd Smart-traffic-Management
    ```
 
 2. **Create virtual environment**
@@ -115,11 +125,26 @@ smart_traffic_violation/
 
 ## 🚀 Usage
 
-### Running the Application
+### Option A: Web Dashboard (Frontend)
+
+Simply open `index.html` in your browser — no server required:
+```bash
+start index.html       # Windows
+open index.html        # macOS
+xdg-open index.html    # Linux
+```
+
+The dashboard provides:
+- Live traffic map with incident markers
+- Real-time charts and analytics
+- Notification panel for active violations
+
+### Option B: Streamlit App (Backend)
 
 1. **Activate virtual environment** (if not already activated)
    ```bash
    .\venv\Scripts\activate  # Windows
+   source venv/bin/activate  # Linux/Mac
    ```
 
 2. **Run Streamlit app**
@@ -130,7 +155,7 @@ smart_traffic_violation/
 3. **Access the application**
    - Open browser at: `http://localhost:8501`
 
-### Using the Application
+### Using the Streamlit Application
 
 #### 1. Detection Page
 - Upload a traffic image (JPG, JPEG, PNG)
@@ -163,7 +188,7 @@ smart_traffic_violation/
 ## 📊 Detection Accuracy
 
 | Violation Type | Accuracy | Method |
-|---------------|----------|---------|
+|---------------|----------|---------| 
 | Helmetless | ~70-80% | Color-based head detection |
 | Triple Riding | ~65-75% | Contour analysis & person counting |
 | Signal Jump | ~60-70% | Red signal & motion detection |
@@ -235,11 +260,9 @@ pip install opencv-python
 
 ### Planned Features
 - [ ] Deep learning models (YOLO, SSD)
-- [ ] Real time video processing
+- [ ] Real-time video processing
 - [ ] Multiple camera support
 - [ ] Cloud deployment
-- [ ] Mobile app integration
-- [ ] Email/SMS alerts
 - [ ] Advanced analytics dashboard
 - [ ] Multi-language support
 
@@ -268,15 +291,10 @@ This project is open source and available for educational and research purposes.
 - Streamlit for rapid web app development
 - Indian traffic authorities for inspiration
 
-## 📞 Support
-
-- Soham Deshpande(sohamd1912@gmail.com)
 
 ---
 
 <div align="center">
-
-*Powered by AI & Computer Vision*
 
 🚦 Stay Safe | Follow Rules | Save Lives 🚦
 
